@@ -7,7 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 const AuthLayout = () => {
   return (
     <>
-      <Stack>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="sign-in" options={{ headerShown: false }} />
         <Stack.Screen name="sign-up" options={{ headerShown: false }} />
       </Stack>

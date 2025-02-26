@@ -5,8 +5,9 @@ import { supabase } from "../../lib/supabase";
 import { Link, router } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Session } from "@supabase/supabase-js";
+import { createClient, Session } from "@supabase/supabase-js";
 import { LinearGradient } from "expo-linear-gradient";
+import { icons } from "@/constants";
 
 const Profile = () => {
   const [loading, setLoading] = useState(false);
@@ -22,12 +23,36 @@ const Profile = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      console.log("Session set:", session);
     });
 
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      console.log("Auth state changed, session set:", session);
     });
   }, []);
+
+  async function logout() {
+    setSession(null);
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session?.user) {
+      Alert.alert("No active user session!");
+      console.error("No active user session!");
+      return;
+    }
+
+    console.log("Logging out user:", sessionData.session.user);
+
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      Alert.alert("There was an error logging out!");
+      console.error("Error logging out:", error);
+    } else {
+      console.log("User logged out successfully");
+      setSession(null); // Clear session state
+      router.push("/");
+    }
+  }
 
   async function getProfile() {
     try {
@@ -57,19 +82,52 @@ const Profile = () => {
     }
   }
 
+  if (!session?.user) {
+    return (
+      <LinearGradient colors={["#FFF8E1", "#FFECB3"]}>
+        <SafeAreaView className="h-full">
+          <View className="w-full justify-center flex-col items-center px-4 my-6 min-h-[85vh]">
+            <Text className="text-4xl font-abold leading-[1.5] text-secondary">
+              Profile
+            </Text>
+            <Text className="text-2xl font-aregular">
+              Please sign in to view your profile
+            </Text>
+            <CustomButton
+              title="Sign in"
+              handlePress={() => router.push("/sign-in")}
+              containerStyles="mt-8 w-full"
+            />
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    );
+  }
   return (
-    <SafeAreaView>
-      <View className="w-full justify-center flex-col items-center px-4 my-6">
-        <Image source={{ uri: avatarUrl }} className="w-[100px] h-[100px]" />
-        <Text className="text-4xl">{username}</Text>
-        <Text className="text-lg">{bio}</Text>
-        <CustomButton
-          title="Edit profile"
-          handlePress={() => router.push("/")}
-          containerStyles="mt-8 w-full"
-        />
-      </View>
-    </SafeAreaView>
+    <LinearGradient colors={["#FFF8E1", "#FFECB3"]}>
+      <SafeAreaView className="h-full">
+        <View className="w-full min-h-[85vh] justify-center flex-col items-center px-4 my-6">
+          <Image
+            source={avatarUrl ? { uri: avatarUrl } : icons.user}
+            className="w-[100px] h-[100px]"
+          />
+          <Text className="text-4xl font-abold leading-[1.5] text-secondary">
+            {username}
+          </Text>
+          <Text className="text-2xl font-aregular">{bio}</Text>
+          <CustomButton
+            title="Edit profile"
+            handlePress={() => router.push("/edit")}
+            containerStyles="mt-8 w-full"
+          />
+          <CustomButton
+            title="Sign out"
+            handlePress={logout}
+            containerStyles="mt-4 w-full bg-red-500"
+          />
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 

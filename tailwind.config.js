@@ -10,6 +10,9 @@ module.exports = {
         secondary: {
           DEFAULT: "#793510",
         },
+        button: {
+          DEFAULT: "#d97706",
+        },
         black: {
           DEFAULT: "#000",
           100: "#1E1E2D",
@@ -20,15 +23,11 @@ module.exports = {
         },
       },
       fontFamily: {
-        pthin: ["Poppins-Thin", "sans-serif"],
-        pextralight: ["Poppins-ExtraLight", "sans-serif"],
-        plight: ["Poppins-Light", "sans-serif"],
-        pregular: ["Poppins-Regular", "sans-serif"],
-        pmedium: ["Poppins-Medium", "sans-serif"],
-        psemibold: ["Poppins-SemiBold", "sans-serif"],
-        pbold: ["Poppins-Bold", "sans-serif"],
-        pextrabold: ["Poppins-ExtraBold", "sans-serif"],
-        pblack: ["Poppins-Black", "sans-serif"],
+        abold: ["Atma-Bold", "sans-serif"],
+        amedium: ["Atma-Medium", "sans-serif"],
+        aregular: ["Atma-Regular", "sans-serif"],
+        alight: ["Atma-Light", "sans-serif"],
+        asemibold: ["Atma-SemiBold", "sans-serif"],
       },
     },
   },

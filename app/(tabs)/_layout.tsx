@@ -1,16 +1,116 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, Alert, Image } from "react-native";
+import React, { useEffect, useState } from "react";
 import { Tabs } from "expo-router";
+import { supabase } from "../../lib/supabase";
+import { Session } from "@supabase/supabase-js";
+import GetProfile from "@/lib/getProfile";
+import { icons } from "@/constants";
+
+interface TabIconProps {
+  icon: any;
+  color: string;
+  name: string;
+  focused: boolean;
+}
+
+const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
+  return (
+    <View className="items-center justify-center gap-2 w-[70px] mt-7">
+      <Image
+        source={icon}
+        resizeMode="contain"
+        {...(name === "Explore" || name === "Review"
+          ? { tintColor: color }
+          : {})}
+        className="w-6 h-6"
+      />
+      <Text
+        className={`${
+          focused ? "font-abold text-lg" : "font-aregular text-lg"
+        }`}
+        style={{ color: color }}
+      >
+        {name}
+      </Text>
+    </View>
+  );
+};
 
 const TabsLayout = () => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  useEffect(() => {
+    if (session) getProfile();
+  }, [session]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+
+  async function getProfile() {
+    try {
+      setLoading(true);
+      if (!session?.user) throw new Error("No user on the session!");
+
+      const { data, error, status } = await supabase
+        .from("profiles")
+        .select(`username, biography, avatar_url`)
+        .eq("id", session?.user.id)
+        .single();
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setUsername(data.username);
+        setAvatarUrl(data.avatar_url);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <>
-      <Tabs>
+      <Tabs
+        screenOptions={{
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: "#793510",
+          tabBarInactiveTintColor: "#000",
+          tabBarStyle: {
+            backgroundColor: "#fff",
+            borderTopColor: "#fff",
+            borderTopWidth: 1,
+            height: 70,
+          },
+        }}
+      >
         <Tabs.Screen
           name="profile"
           options={{
-            title: "Profile",
+            title: username,
             headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={avatarUrl ? { uri: avatarUrl } : icons.user}
+                color={color}
+                name={username || "Profile"}
+                focused={focused}
+              />
+            ),
           }}
         />
 
@@ -19,6 +119,14 @@ const TabsLayout = () => {
           options={{
             title: "Explore",
             headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.milk}
+                color={color}
+                name={"Explore"}
+                focused={focused}
+              />
+            ),
           }}
         />
 
@@ -27,6 +135,14 @@ const TabsLayout = () => {
           options={{
             title: "Review",
             headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.star}
+                color={color}
+                name={"Review"}
+                focused={focused}
+              />
+            ),
           }}
         />
       </Tabs>

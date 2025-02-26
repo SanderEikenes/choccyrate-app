@@ -15,7 +15,9 @@ export default function App() {
             <Image source={images.logo} className="w-[300px] h-[300px]" />
 
             <View>
-              <Text className="text-6xl mt-8">Choccyrate</Text>
+              <Text className="text-6xl mt-8 font-abold text-secondary leading-[1.5]">
+                Choccyrate
+              </Text>
             </View>
 
             <CustomButton

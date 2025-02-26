@@ -23,19 +23,9 @@ const SignIn = () => {
     });
   }, []);
 
-  const [form, setform] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [isSubmitting, setisSubmitting] = useState(false);
-
-  const submit = () => {};
-
   return (
     <SafeAreaView className="bg-primary h-full">
-      <Auth />
-      {session && session.user && <Text>{session.user.id}</Text>}
+      <Auth signin={true} />
     </SafeAreaView>
   );
 };
