@@ -23,12 +23,10 @@ const Profile = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      console.log("Session set:", session);
     });
 
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      console.log("Auth state changed, session set:", session);
     });
   }, []);
 
@@ -109,7 +107,7 @@ const Profile = () => {
         <View className="w-full min-h-[85vh] justify-center flex-col items-center px-4 my-6">
           <Image
             source={avatarUrl ? { uri: avatarUrl } : icons.user}
-            className="w-[100px] h-[100px]"
+            className="w-[100px] h-[100px] rounded-full"
           />
           <Text className="text-4xl font-abold leading-[1.5] text-secondary">
             {username}

@@ -18,20 +18,12 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
     <View className="items-center justify-center gap-2 w-[70px] mt-7">
       <Image
         source={icon}
-        resizeMode="contain"
+        resizeMode="cover"
         {...(name === "Explore" || name === "Review"
           ? { tintColor: color }
           : {})}
-        className="w-6 h-6"
+        className="w-7 h-7 rounded-full"
       />
-      <Text
-        className={`${
-          focused ? "font-abold text-lg" : "font-aregular text-lg"
-        }`}
-        style={{ color: color }}
-      >
-        {name}
-      </Text>
     </View>
   );
 };
@@ -93,8 +85,7 @@ const TabsLayout = () => {
           tabBarStyle: {
             backgroundColor: "#fff",
             borderTopColor: "#fff",
-            borderTopWidth: 1,
-            height: 70,
+            height: 60,
           },
         }}
       >
